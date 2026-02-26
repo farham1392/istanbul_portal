@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes">
+    <title>مسیر یاب · گوگل مپ (چندزبانه)</title>
+    <!-- فونت وزیر – خوانا و زیبا -->
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;700;800&display=swap" rel="stylesheet">
+    <!-- Font Awesome 6 برای آیکون‌های پرچم -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Vazirmatn', sans-serif;
+            background: radial-gradient(circle at 20% 30%, #0a1f2e, #030812);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .map-super-container {
+            width: 100%;
+            max-width: 1600px;
+            background: rgba(10, 20, 30, 0.6);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: 32px;
+            padding: 24px;
+            box-shadow: 0 30px 60px -15px rgba(0,0,0,0.8);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        /* ===== هدر با عنوان و انتخابگر زبان ===== */
+        .header-area {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        h1 {
+            color: white;
+            font-size: 2.8rem;
+            font-weight: 800;
+            padding-right: 20px;
+            border-right: 10px solid #4285f4;
+            text-shadow: 0 0 25px #4285f4;
+            letter-spacing: 3px;
+            margin: 0;
+            flex: 1;
+        }
+        .language-selector {
+            display: flex;
+            gap: 12px;
+            background: rgba(0,0,0,0.5);
+            padding: 8px 16px;
+            border-radius: 50px;
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+        .lang-btn {
+            background: transparent;
+            border: none;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 40px;
+            font-family: 'Vazirmatn', sans-serif;
+            font-size: 16px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: 0.2s;
+            border: 1px solid transparent;
+        }
+        .lang-btn i {
+            font-size: 1.2rem;
+        }
+        .lang-btn.active {
+            background: #4285f4;
+            border-color: white;
+            box-shadow: 0 0 15px #4285f4;
+        }
+        .lang-btn:hover {
+            background: rgba(255,255,255,0.2);
+        }
+
+        .google-maps-frame {
+            position: relative;
+            width: 100%;
+            padding-bottom: 60%;
+            background: #02040a;
+            border-radius: 24px;
+            overflow: hidden;
+            border: 3px solid rgba(255,255,255,0.25);
+            box-shadow: 0 0 50px rgba(66,133,244,0.4);
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .google-maps-frame:hover {
+            border-color: #4285f4;
+            box-shadow: 0 0 80px rgba(66,133,244,0.7);
+            transform: scale(1.01);
+        }
+        .google-maps-frame iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100% !important;
+            height: 100% !important;
+            border: 0;
+        }
+
+        /* واکنش‌گرایی */
+        @media (max-width: 768px) {
+            .header-area { flex-direction: column; align-items: stretch; }
+            h1 { font-size: 2rem; border-right-width: 8px; }
+            .map-super-container { padding: 16px; }
+            .google-maps-frame { padding-bottom: 75%; }
+            .lang-btn span { display: none; } /* فقط آیکون در موبایل */
+            .lang-btn i { margin: 0; font-size: 1.5rem; }
+        }
+        @media (max-width: 480px) {
+            h1 { font-size: 1.8rem; }
+        }
+        
+        .home-btn {
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            cursor: pointer;
+            transition: 0.2s;
+            border: 2px solid white;
+        }
+        .home-btn:hover {
+            transform: scale(1.1);
+            background: #ff8e53;
+        }
+        
+    </style>
+</head>
+<body>
+    <div class="map-super-container">
+        <!-- هدر: عنوان + دکمه‌های زبان -->
+        <div class="header-area">
+            <h1 id="pageTitle">🗺️ مسیر یاب</h1>
+            <div class="language-selector">
+                <button class="home-btn" onclick="window.location.href='index.php'" title="بازگشت به صفحه اصلی / Ana Sayfa / Home">
+                    <i class="fas fa-home"></i>
+                </button>
+                <button class="lang-btn active" onclick="setLanguage('fa')" id="langFa">
+                    <i class="fas fa-flag"></i> <span>فارسی</span>
+                </button>
+                <button class="lang-btn" onclick="setLanguage('tr')" id="langTr">
+                    <i class="fas fa-flag"></i> <span>Türkçe</span>
+                </button>
+                <button class="lang-btn" onclick="setLanguage('en')" id="langEn">
+                    <i class="fas fa-flag"></i> <span>English</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- iframe گوگل مپ – آدرس پایه بدون زبان (پارامتر hl اضافه می‌شود) -->
+        <div class="google-maps-frame">
+            <iframe 
+                id="googleMapIframe"
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d385534.5268607291!2d28.822097949999996!3d41.0053215!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x14caa7040068086b%3A0xe1ccfe98bc01b0d0!2sSultanahmet%2C%20Fatih%2F%C4%B0stanbul%2C%20Turkey!5e0!3m2!1sen!2s!4v1743456789012!5m2!1sen!2s"
+                allowfullscreen=""
+                loading="lazy"
+                referrerpolicy="no-referrer-when-downgrade"
+                style="border:0;"
+            ></iframe>
+        </div>
+    </div>
+
+    <script>
+        // ========== ترجمه عنوان صفحه ==========
+        const translations = {
+            fa: "🗺️ مسیر یاب",
+            tr: "🗺️ Rota Bulucu",
+            en: "🗺️ Route Finder"
+        };
+
+        // ========== تابع تغییر زبان ==========
+        function setLanguage(lang) {
+            // 1. تغییر عنوان
+            document.getElementById('pageTitle').textContent = translations[lang];
+
+            // 2. به‌روزرسانی کلاس active روی دکمه‌ها
+            document.getElementById('langFa').classList.toggle('active', lang === 'fa');
+            document.getElementById('langTr').classList.toggle('active', lang === 'tr');
+            document.getElementById('langEn').classList.toggle('active', lang === 'en');
+
+            // 3. تغییر جهت صفحه
+            if (lang === 'fa') {
+                document.documentElement.setAttribute('dir', 'rtl');
+            } else {
+                document.documentElement.setAttribute('dir', 'ltr');
+            }
+
+            // 4. تغییر زبان نقشه (اضافه کردن پارامتر hl)
+            const iframe = document.getElementById('googleMapIframe');
+            let src = iframe.src;
+            // حذف پارامتر hl قبلی (اگر وجود داشته باشد)
+            src = src.replace(/&hl=(fa|tr|en)/g, '');
+            // اضافه کردن پارامتر جدید
+            src += `&hl=${lang}`;
+            iframe.src = src;
+        }
+
+        // ========== تنظیم زبان پیش‌فرض (فارسی) ==========
+        // اطمینان از اینکه صفحه با پارامتر hl=fa بارگذاری شود
+        window.onload = function() {
+            setLanguage('fa');
+        };
+    </script>
+</body>
+</html>
